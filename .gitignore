@@ -53,3 +53,11 @@ linux-v*/
 Assignment_*/**/linux/
 Assignment_*/**/linux-*/
 Assignment_*/**/linux-v*/
+
+# --- exclude docker home / secrets / history ---
+**/docker/home/**
+**/.ssh/
+**/.bash_history
+**/.lesshst
+**/.cache/
+**/.local/
