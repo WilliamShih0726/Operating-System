@@ -1,0 +1,1 @@
+savedcmd_/home/ubuntu/hw3/kfetch_mod_313512009.ko := riscv64-linux-gnu-ld -r -melf64lriscv -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T scripts/module.lds -o /home/ubuntu/hw3/kfetch_mod_313512009.ko /home/ubuntu/hw3/kfetch_mod_313512009.o /home/ubuntu/hw3/kfetch_mod_313512009.mod.o

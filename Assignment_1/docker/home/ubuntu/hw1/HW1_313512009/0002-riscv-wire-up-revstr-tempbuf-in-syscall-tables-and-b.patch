@@ -1,0 +1,73 @@
+From 77db8826b7b8f69a66c70c0198af1283a4999c19 Mon Sep 17 00:00:00 2001
+From: CHENG-WEI SHIH <william0726.tai@gmail.com>
+Date: Fri, 17 Oct 2025 12:34:27 +0000
+Subject: [PATCH HW1 2/2] riscv: wire up revstr/tempbuf in syscall tables and
+ build
+
+Signed-off-by: CHENG-WEI SHIH <william0726.tai@gmail.com>
+---
+ arch/riscv/include/uapi/asm/unistd.h     | 11 +++++++++++
+ arch/riscv/kernel/compat_syscall_table.c |  3 +++
+ arch/riscv/kernel/syscall_table.c        |  3 +++
+ kernel/Makefile                          |  1 +
+ 4 files changed, 18 insertions(+)
+
+diff --git a/arch/riscv/include/uapi/asm/unistd.h b/arch/riscv/include/uapi/asm/unistd.h
+index 73d7cdd2e..61faf5b37 100644
+--- a/arch/riscv/include/uapi/asm/unistd.h
++++ b/arch/riscv/include/uapi/asm/unistd.h
+@@ -43,3 +43,14 @@
+ #define __NR_riscv_flush_icache (__NR_arch_specific_syscall + 15)
+ #endif
+ __SYSCALL(__NR_riscv_flush_icache, sys_riscv_flush_icache)
++
++/* --- HW1 custom syscalls for RISC-V --- */
++#define __NR_revstr   451
++#define __NR_tempbuf  452
++
++__SYSCALL(__NR_revstr,  __riscv_sys_revstr)
++__SYSCALL(__NR_tempbuf, __riscv_sys_tempbuf)
++
++/* 保證 syscall table 長度涵蓋到 452 */
++#undef __NR_syscalls
++#define __NR_syscalls 453
+diff --git a/arch/riscv/kernel/compat_syscall_table.c b/arch/riscv/kernel/compat_syscall_table.c
+index 651f2b009..7e8456c2a 100644
+--- a/arch/riscv/kernel/compat_syscall_table.c
++++ b/arch/riscv/kernel/compat_syscall_table.c
+@@ -8,6 +8,9 @@
+ #include <asm-generic/syscalls.h>
+ #include <asm/syscall.h>
+ 
++asmlinkage long __riscv_sys_revstr(char __user *str, size_t n);
++asmlinkage long __riscv_sys_tempbuf(int mode, void __user *data, size_t size);
++
+ #undef __SYSCALL
+ #define __SYSCALL(nr, call)      [nr] = (call),
+ 
+diff --git a/arch/riscv/kernel/syscall_table.c b/arch/riscv/kernel/syscall_table.c
+index 44b1420a2..059d98e93 100644
+--- a/arch/riscv/kernel/syscall_table.c
++++ b/arch/riscv/kernel/syscall_table.c
+@@ -9,6 +9,9 @@
+ #include <asm-generic/syscalls.h>
+ #include <asm/syscall.h>
+ 
++asmlinkage long __riscv_sys_revstr(char __user *str, size_t n);
++asmlinkage long __riscv_sys_tempbuf(int mode, void __user *data, size_t size);
++
+ #undef __SYSCALL
+ #define __SYSCALL(nr, call)	[nr] = (call),
+ 
+diff --git a/kernel/Makefile b/kernel/Makefile
+index d754e0be1..92a9a2721 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -159,3 +159,4 @@ $(obj)/kheaders_data.tar.xz: FORCE
+ 	$(call cmd,genikh)
+ 
+ clean-files := kheaders_data.tar.xz kheaders.md5
++obj-y += os_hw1_syscalls.o
+-- 
+2.43.0
+

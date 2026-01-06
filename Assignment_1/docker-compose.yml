@@ -1,0 +1,15 @@
+# version: '3.8'
+services:
+  main:
+    build: .
+    restart: unless-stopped
+    privileged: false
+    ports:
+      - "22025:22"
+    volumes:
+      - ./docker/home/ubuntu:/home/ubuntu
+    networks:
+        default:
+
+networks:
+  default:
